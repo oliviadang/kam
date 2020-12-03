@@ -1,88 +1,102 @@
-define([‘pipAPI’,’https://cdn.jsdelivr.net/gh/baranan/minno-tasks@0.*/IAT/qualtrics/quiat9.js’], function(APIConstructor, iatExtension){ var API = new APIConstructor();
+define(['pipAPI'], function(APIconstructor) {
 
-//Randomly choose the attribute words from a larger list of attribute words. //Internal studies in Project Implicit found no difference in performance between the words. var posWords = API.shuffle([ ‘Love’, ‘Cheer’, ‘Friend’, ‘Pleasure’, ‘Adore’, ‘Cheerful’, ‘Friendship’, ‘Joyful’, ‘Smiling’,’Cherish’, ‘Excellent’, ‘Glad’, ‘Joyous’, ‘Spectacular’, ‘Appealing’, ‘Delight’, ‘Excitement’, ‘Laughing’, ‘Attractive’,’Delightful’, ‘Fabulous’, ‘Glorious’, ‘Pleasing’, ‘Beautiful’, ‘Fantastic’, ‘Happy’, ‘Lovely’, ‘Terrific’, ‘Celebrate’, ‘Enjoy’, ‘Magnificent’, ‘Triumph’]); var negWords = API.shuffle([ ‘Abuse’, ‘Grief’, ‘Poison’, ‘Sadness’, ‘Pain’, ‘Despise’, ‘Failure’, ‘Nasty’, ‘Angry’, ‘Detest’, ‘Horrible’, ‘Negative’, ‘Ugly’, ‘Dirty’, ‘Gross’, ‘Evil’, ‘Rotten’,’Annoy’, ‘Disaster’, ‘Horrific’,
-‘Scorn’, ‘Awful’, ‘Disgust’, ‘Hate’, ‘Humiliate’, ‘Selfish’, ‘Tragic’, ‘Bothersome’, ‘Hatred’, ‘Hurtful’, ‘Sickening’, ‘Yucky’]);
+var API = new APIconstructor();
 
-return iatExtension({
-    category1 : {
-        name : 'Black people', //Will appear in the data.
-        title : {
-            media : {word : 'Black people'}, //Name of the category presented in the task.
-            css : {color:'#31940F','font-size':'1.8em'}, //Style of the category title.
-            height : 4 //Used to position the "Or" in the combined block.
-        }, 
-        stimulusMedia : [ //Stimuli content as PIP's media objects
-            {image: 'bm1_nc.jpg'},
-            {image: 'bm2_nc.jpg'},
-            {image: 'bm3_nc.jpg'},
-			{image: 'bf1_nc.jpg'},
-            {image: 'bf2_nc.jpg'},                 
-			{image: 'bf3_nc.jpg'}     
-	    ],
-		//Stimulus css (style)
-		stimulusCss : {color:'#31940F','font-size':'2.3em'}
-    },    
-    category2 :    {
-        name : 'White people', //Will appear in the data.
-        title : {
-            media : {word : 'White people'}, //Name of the category presented in the task.
-            css : {color:'#31940F','font-size':'1.8em'}, //Style of the category title.
-            height : 4 //Used to position the "Or" in the combined block.
-        }, 
-        stimulusMedia : [ //Stimuli content as PIP's media objects
-            {image: 'wm1_nc.jpg'},
-            {image: 'wm2_nc.jpg'},
-            {image: 'wm3_nc.jpg'},
-			{image: 'wf1_nc.jpg'},
-        	{image: 'wf2_nc.jpg'},
-        	{image: 'wf3_nc.jpg'}
-        ],
-		//Stimulus css (style)
-		stimulusCss : {color:'#31940F','font-size':'2.3em'}
-    },
-	attribute1 :
-	{
-		name : 'Bad',
-		title : {
-			media : {word : 'Bad'},
-			css : {color:'#0000FF','font-size':'1.8em'},
-			height : 4 //Used to position the "Or" in the combined block.
+API.addStimulusSets({
+    red: [
+		{media:'Red', css:{color:'red'}},
+		{media:'Blue', css:{color:'red'}}
+	], 
+    blue: [
+		{media:'Red', css:{color:'blue'}},
+		{media:'Blue', css:{color:'blue'}}
+	],
+	error: [
+	    {handle:'error',media:'X', css:{fontSize:'2em',color:'#FF0000'}, location:{bottom:30}}
+	]
+});
+
+API.addTrialSets('base',[{
+	input: [
+		{handle:'red',on:'keypressed',key:'1'},
+		{handle:'blue',on:'keypressed',key:'2'}
+	],
+	layout: [
+		{media:'1',location:{left:2,top:2},css:{background:'red',padding:'2%',fontSize:'1.5em'}},
+		{media:'2',location:{right:2,top:2},css:{background:'blue',padding:'2%',fontSize:'1.5em'}},
+		{media:'Press 1 for red, 2 for blue',location:{bottom:1}}
+	],
+	interactions: [
+		{
+			conditions:[{type:'begin'}],
+			actions: [{type:'showStim', handle: 'target'}]
 		},
-		stimulusMedia : [ //Stimuli content as PIP's media objects
-			{word: negWords[0]},
-			{word: negWords[1]},
-			{word: negWords[2]},
-			{word: negWords[3]},
-			{word: negWords[4]},
-			{word: negWords[5]},
-			{word: negWords[6]},
-			{word: negWords[7]}
-		],
-		//Stimulus css
-		stimulusCss : {color:'#0000FF','font-size':'2.3em'}
-	},
-	attribute2 :
-	{
-		name : 'Good',
-		title : {
-			media : {word : 'Good'},
-			css : {color:'#0000FF','font-size':'1.8em'},
-			height : 4 //Used to position the "Or" in the combined block.
+		{
+			conditions: [
+				{type:'inputEqualsTrial',property:'group'}
+			],
+			actions: [
+				{type:'setTrialAttr', setter:{score:1}},
+				{type:'log'},
+				{type:'trigger', handle:'ITI'}
+			]
 		},
-		stimulusMedia : [ //Stimuli content as PIP's media objects
-			{word: posWords[0]},
-			{word: posWords[1]},
-			{word: posWords[2]},
-			{word: posWords[3]},
-			{word: posWords[4]},
-			{word: posWords[5]},
-			{word: posWords[6]},
-			{word: posWords[7]}
-		],
-		//Stimulus css
-		stimulusCss : {color:'#0000FF','font-size':'2.3em'}
-	},
-    base_url : {//Where are your images at? You might want to copy the photos to your own server
-        image : 'https://baranan.github.io/minno-tasks/images/'
-    }
-}); });
+		{
+			conditions: [
+				{type:'inputEqualsTrial',property:'group',negate:true},
+				{type:'inputEquals',value:['red','blue']}
+			],
+			actions: [
+				{type:'setTrialAttr', setter:{score:0}},
+				{type:'log'},
+				{type:'showStim', handle:'error'},
+				{type:'removeInput',handle:['red','blue','green']},
+				{type:'trigger', handle:'ITI', duration:500}
+			]
+		},
+		{
+			conditions: [{type:'inputEquals', value:'ITI'}],
+			actions:[
+				{type:'hideStim',handle:'All'},
+				{type:'removeInput',handle:['red','blue','green']},
+				{type:'trigger', handle:'end',duration:500}
+			]
+		},
+		{
+			conditions: [{type:'inputEquals', value:'end'}],
+			actions:[
+				{type:'endTrial'}
+			]
+		}
+	]
+}]);
+
+API.addSequence([
+	{
+		mixer: 'random',
+		data: [
+			{
+				mixer: 'repeat',
+				times: 5,
+				data: [
+					{
+	                    inherit:'base',
+	                    data: {group:'red'},
+	                    stimuli: [
+		                    {inherit:{set:'red',type:'exRandom'}, handle:'target'},
+		                    {inherit:'error'}
+	                    ]
+                    },
+					{
+	                    inherit:'base',
+	                    data: {group:'blue'},
+	                    stimuli: [
+		                    {inherit:{set:'blue',type:'exRandom'}, handle:'target'},
+		                    {inherit:'error'}
+	                    ]
+                    }
+				]
+			}
+		]
+	}
+]);
